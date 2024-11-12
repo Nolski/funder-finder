@@ -9,8 +9,9 @@ from sources.config import PRODUCTION_FINDERS
 # Iterate over the projects and print their details
 def get_project_funders(repo_name: str) -> list:
     """
-    Attempts to retrieve funding data from each source for matching projects. When funding sources are found, adds the
-    source's name, a boolean is_funded field with value True, and the date the funding data was retrieved to the
+    Attempts to retrieve funding data from each source for matching projects.
+    When funding sources are found, adds the source's name, a boolean is_funded
+    field with value True, and the date the funding data was retrieved to the
     metadata of each source of funding that was found
     :param repo_name: Github identifier for the project (e.g. georgetown-cset/funder-finder)
     :return: An array of funding metadata

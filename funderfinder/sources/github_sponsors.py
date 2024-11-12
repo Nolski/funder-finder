@@ -41,8 +41,9 @@ class GitHubSponsorsFinder(Finder):
             }
         """
         variables = {"org": org}
-        # adding bearer before the token is a suprising but necessary requirement
-        # see SO: https://stackoverflow.com/questions/70693292/github-graphql-api-this-endpoint-requires-you-to-be-authenticated
+        # adding bearer before the token is a suprising but necessary
+        # requirement see SO:
+        # https://stackoverflow.com/questions/70693292/github-graphql-api-this-endpoint-requires-you-to-be-authenticated
         headers = {"Authorization": "bearer " + os.environ.get(self.API_KEY)}
         result = requests.post(
             "https://api.github.com/graphql",

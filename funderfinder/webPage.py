@@ -101,15 +101,10 @@ def convert_date_format(date_string):
 def processing_data(repo_name):
     if st.button("Plot Graph"):
         v0 = get_project_funders(repo_name)
-        print(v0, "before")
         v0 = convert_date_format2(v0)
-        print(v0, "after")
-        # print("after after")
 
         if v0:
             # Extract first and last dates
-            # all_dates = [funding_info["datesFrom"] for project_data in v0 for funding_info in project_data]
-
             all_dates = []
             for funding_source in v0.values():
                 for item in funding_source:
@@ -117,8 +112,9 @@ def processing_data(repo_name):
                         all_dates.append(item["datesFrom"])
 
             all_dates = sorted(list(set(all_dates)))
-            # all correct till here
-            for key, project_data in v0.items():  # Iterate over the dictionary keys
+            # Iterate over the dictionary keys
+
+            for key, project_data in v0.items():
                 funding_amounts = []
                 for date in all_dates:
                     amount = 0

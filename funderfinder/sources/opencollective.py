@@ -7,8 +7,9 @@ import requests
 from ._finder import Finder
 
 """
-Retrieves project funding statistics from Opencollective. To run this script, you must first set
-an OPENCOLLECTIVE_API_KEY environment variable. See: https://graphql-docs-v2.opencollective.com/access
+Retrieves project funding statistics from Opencollective. To run this script,
+you must first set an OPENCOLLECTIVE_API_KEY environment variable. See:
+https://graphql-docs-v2.opencollective.com/access
 """
 
 
@@ -103,7 +104,6 @@ class OpenCollectiveFinder(Finder):
                 }}
             }}
             """
-            # print(query)
             variables = {"slug": project_slug}
 
             result = requests.post(
@@ -141,7 +141,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "project_slug",
-        help="identifier for the project (like 'babel' in 'https://opencollective.com/babel')",
+        help="identifier for the project (like 'babel' in \
+                'https://opencollective.com/babel')",
     )
     args = parser.parse_args()
     finder = OpenCollectiveFinder()
