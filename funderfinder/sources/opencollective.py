@@ -3,8 +3,9 @@ import os
 from typing import Union
 
 import requests
+import time
 
-from ._finder import Finder
+from ._finder import Finder, DATE_RANGE
 
 """
 Retrieves project funding statistics from Opencollective. To run this script,
@@ -25,69 +26,15 @@ class OpenCollectiveFinder(Finder):
 
     def get_funding_stats(self, project_slug: str) -> dict:
         """
-        Retrives funding statistics for a project. See: https://graphql-docs-v2.opencollective.com/queries/collective
-        :param project_slug: identifier for the project (like 'babel' in 'https://opencollective.com/babel')
+        Retrives funding statistics for a project. See:
+        https://graphql-docs-v2.opencollective.com/queries/collective
+        :param project_slug: identifier for the project (like 'babel' in
+            'https://opencollective.com/babel')
         :return: Dict of funding stats
         """
-        # query = """
-        #   query ($slug: String) {
-        #     collective (slug: $slug) {
-        #       totalFinancialContributors
-        #       stats {
-        #         totalAmountReceived {
-        #           currency
-        #           value
-        #         }
-        #       }
-        #     }
-        #   }
-        # """
-        result_arr = []
-        dates = [
-            ("2018-01-01T00:00:00Z", "2018-07-01T00:00:00Z"),
-            ("2018-07-01T00:00:00Z", "2019-01-01T00:00:00Z"),
-            ("2019-01-01T00:00:00Z", "2019-07-01T00:00:00Z"),
-            ("2019-07-01T00:00:00Z", "2020-01-01T00:00:00Z"),
-            ("2020-01-01T00:00:00Z", "2020-07-01T00:00:00Z"),
-            ("2020-07-01T00:00:00Z", "2021-01-01T00:00:00Z"),
-            ("2021-01-01T00:00:00Z", "2021-07-01T00:00:00Z"),
-            ("2021-07-01T00:00:00Z", "2022-01-01T00:00:00Z"),
-            ("2022-01-01T00:00:00Z", "2022-07-01T00:00:00Z"),
-            ("2022-07-01T00:00:00Z", "2023-01-01T00:00:00Z"),
-            ("2023-01-01T00:00:00Z", "2023-07-01T00:00:00Z"),
-            ("2023-07-01T00:00:00Z", "2024-01-01T00:00:00Z"),
-        ]
-        # dates=[
-        # ("2015-01-01T00:00:00Z", "2015-07-01T00:00:00Z"),
-        # ("2015-07-01T00:00:00Z", "2016-01-01T00:00:00Z"),
-        # ("2016-01-01T00:00:00Z", "2016-07-01T00:00:00Z"),
-        # ("2016-07-01T00:00:00Z", "2017-01-01T00:00:00Z"),
-        # ("2017-01-01T00:00:00Z", "2017-07-01T00:00:00Z"),
-        # ("2017-07-01T00:00:00Z", "2018-01-01T00:00:00Z"),
-        # ("2018-01-01T00:00:00Z", "2018-07-01T00:00:00Z"),
-        # ("2018-07-01T00:00:00Z", "2019-01-01T00:00:00Z"),
-        # ("2019-01-01T00:00:00Z", "2019-07-01T00:00:00Z"),
-        # ("2019-07-01T00:00:00Z", "2020-01-01T00:00:00Z")
-        # ]
 
-        # dates=[
-        # ("2020-01-01T00:00:00Z",  "2024-01-01T00:00:00Z")]
-        # query= """
-        # query ($slug: String) {
-        #     collective (slug: $slug) {
-        #     totalFinancialContributors
-        #       stats {
-        #         totalAmountReceived(
-        #           dateFrom: "2020-01-01T00:00:00Z"
-        #           dateTo: "2024-01-01T00:00:00Z"
-        #         ) {
-        #           currency
-        #           value
-        #         }
-        #       }
-        #     }
-        #   }"""
-        for date_range in dates:
+        result_arr = []
+        for date_range in DATE_RANGE:
             query = f"""
             query ($slug: String) {{
                 collective (slug: $slug) {{
@@ -146,5 +93,6 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     finder = OpenCollectiveFinder()
-    stats = finder.get_funding_stats(args.project_slug)
-    print(stats)
+    # stats = finder.get_funding_stats(args.project_slug)
+    # print(stats)
+    print(finder.get_hosts())

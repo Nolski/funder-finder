@@ -1,7 +1,8 @@
 # Retrieves all funding information for a project from supported sources
 
+import json
 import argparse
-from datetime import datetime
+from sources.opencollective import OpenCollectiveFinder
 
 import matplotlib.pyplot as plt
 from sources.config import PRODUCTION_FINDERS

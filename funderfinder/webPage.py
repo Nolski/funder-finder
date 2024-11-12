@@ -33,6 +33,8 @@ def get_project_funders(repo_name: str) -> list:
                 obj[finder.name] = funding
 
     print("Done finding everywhere")
+    print([x['Amount_of_funding_usd'] for x in obj['Open Collective']])
+    print([x['datesTo'] for x in obj['Open Collective']])
     print("....................")
 
     return obj
@@ -141,7 +143,7 @@ def processing_data(repo_name):
 
 def get_top_10_repos():
     with open(
-        "/Users/vishalpanchidi/Desktop/latest-funder/funder-finder/funderfinder/project_slopes.json",
+        "./project_slopes.json",
         "r",
     ) as f:  # Replace 'path_to_json_file.json' with the path to your JSON file
         data = json.load(f)
@@ -174,7 +176,7 @@ def get_top_10_repos():
 
 def get_bottom_10_repos():
     with open(
-        "/Users/vishalpanchidi/Desktop/latest-funder/funder-finder/funderfinder/project_slopes.json",
+        "./project_slopes.json",
         "r",
     ) as f:  # Replace 'path_to_json_file.json' with the path to your JSON file
         data = json.load(f)

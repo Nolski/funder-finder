@@ -1,4 +1,29 @@
 from typing import Union
+from datetime import datetime, timedelta
+import pandas as pd
+
+
+def get_date_range():
+    # Current date
+    now = datetime.now()
+
+    # Calculate the start date 5 years ago
+    start_date = now - timedelta(days=5 * 365)
+
+    # Generate a list of tuples representing 6-month blocks with the required
+    # time format
+    date_ranges = pd.date_range(start=start_date, end=now, freq='6ME')
+
+    return [
+        (
+            date_ranges[i].strftime('%Y-%m-%dT00:00:00Z'),
+            date_ranges[i + 1].strftime('%Y-%m-%dT00:00:00Z')
+        )
+        for i in range(len(date_ranges) - 1)
+    ]
+
+
+DATE_RANGE = get_date_range()
 
 
 class Finder:

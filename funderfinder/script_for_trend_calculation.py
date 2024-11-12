@@ -68,8 +68,8 @@ def reading_all_projects():
     # Read the JSON file
     data = []
     urls = [
-        "/Users/vishalpanchidi/Desktop/latest-funder/funder-finder/funderfinder/data/gsoc.jsonl",
-        "/Users/vishalpanchidi/Desktop/latest-funder/funder-finder/funderfinder/data/numfocus.jsonl",
+        "./data/gsoc.jsonl",
+        "./data/numfocus.jsonl",
     ]
     for url in urls:
         with open(url, "r") as file:

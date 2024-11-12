@@ -1,4 +1,3 @@
-from .github_sponsors import GitHubSponsorsFinder
 from .gsoc import GSOCFinder
 from .numfocus import NumFocusFinder
 from .opencollective import OpenCollectiveFinder
@@ -10,3 +9,5 @@ PRODUCTION_FINDERS = [
     TideliftFinder,
     GSOCFinder,
 ]
+
+
