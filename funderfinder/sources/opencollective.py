@@ -58,13 +58,21 @@ class OpenCollectiveFinder(Finder):
                 json={"query": query, "variables": variables},
             )
             data = result.json()
-            # print(data,"hhhhhhhhh")
+            if "errors" in data:
+                print(data)
+                if "No collective found with slug" in data.get("errors")[0].get("message") or\
+                    "Not Found" in data.get("errors")[0].get("message"):
+                    return None
+
             if "error" in data:
-                pass
+                print(data)
+                time.sleep(15)
+                return self.get_funding_stats(project_slug)
             else:
-                stats = data["data"]["collective"]
-                # print("--------")
-                # print("Stats",stats)
+                collective = data.get('data', {}).get('collective', {})
+                if collective.get('totalFinancialContributors', None) == 0:
+                    return None 
+                stats = collective
                 if stats:
                     result_arr.append(
                         {
@@ -76,8 +84,65 @@ class OpenCollectiveFinder(Finder):
                             "datesTo": date_range[1],
                         }
                     )
-        # print("result_arr", result_arr)
         return result_arr
+
+    def get_accounts(self, offset=0) -> dict:
+        query = f"""
+        {{
+          accounts(limit:100, offset:{offset}, type:COLLECTIVE) {{
+            totalCount
+            nodes {{
+              id
+              slug
+              type
+              totalFinancialContributors
+            }}
+          }}
+        }}
+        """
+
+        result = requests.post(
+            f"https://api.opencollective.com/graphql/v2/{self.api_key}",
+            json={"query": query},
+        )
+        return result.json()['data']['accounts']
+
+        
+    def get_host_projects(self, slug: str) -> list:
+        query = """
+        query($slug: String!, $limit: Int, $offset: Int) {
+            connectedAccounts(slug: $slug) {
+                ... on Host {
+                collectives(limit: $limit, offset: $offset) {
+                        totalCount
+                        nodes {
+                            id
+                            slug
+                            name
+                            description
+                            balance {
+                                value
+                                currency
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        """
+        
+        variables = {
+            "slug": slug,
+            "limit": 100,
+            "offset": 0 
+        }
+        
+        response = requests.post(
+            'https://api.opencollective.com/graphql/v2',
+            json={'query': query, 'variables': variables}
+        )
+        return response.json()
+
 
     def run(self, gh_project_slug: Union[str, None] = None) -> list:
         stats = self.get_funding_stats(self.get_repo_name(gh_project_slug))

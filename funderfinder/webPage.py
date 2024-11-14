@@ -51,6 +51,14 @@ def plot_graph(dates_from, values):
     plt.tight_layout()
     st.pyplot(plt)
 
+def plot_histogram():
+    # Creating the histogram with bins of 0.1 increments
+    plt.figure(figsize=(8, 6))
+    plt.hist(data, bins=np.arange(-1, 1.1, 0.1), edgecolor='black')
+    plt.xlabel('Value Range')
+    plt.ylabel('Frequency')
+    plt.title('Histogram of Floats Between -1 and 1 (Grouped by 0.1)')
+    plt.show()
 
 def getting_all_repos():
     # script to read all the repos and
@@ -219,7 +227,6 @@ def main():
     repo_name = st.text_input(
         "Enter Github repository name (e.g., georgetown-cset/funder-finder):"
     )
-    # st.button("First 15 Companies with most changes")
     processing_data(repo_name)
 
 

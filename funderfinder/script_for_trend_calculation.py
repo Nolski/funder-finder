@@ -86,16 +86,10 @@ class InvalidPolynomialFitError(Exception):
 
 def start(data):
     results = []
-    for project in data:
-        print("Name:", project["name"])
-        # print("Slug:", project["slug"])
-        # print("GitHub Name:", project["github_name"])
-        # print("Relationship:", project["relationship"])
-        print()
-        v0 = get_project_funders(project["name"])
-
+    for slug, project in data.items():
+        print("Name:", slug)
+        v0 = {slug: project}
         v0 = convert_date_format2(v0)
-        # print(v0,"v0")
 
         if v0:
             # Extract first and last dates
@@ -115,6 +109,8 @@ def start(data):
                         if "datesFrom" in obj and obj["datesFrom"] == date:
                             amount = obj["Amount_of_funding_usd"]
                     funding_amounts.append(amount)
+                if max(funding_amounts) < 1000:
+                    continue
                 # print(funding_amounts,"Final funding amount")
                 try:
                     # Normalize x and y values
@@ -136,26 +132,21 @@ def start(data):
                     print(e)
                     continue
 
-                print(
-                    all_dates,
-                    funding_amounts,
-                    key,
-                    project["name"],
-                    "This is the final",
-                )
-                print(z[0], "I am here")
                 result = {
                     "source": key,
-                    "project_name": project["name"],
+                    "project_name": slug,
                     # Assuming project name is the same for all objects in project_data
                     "slope": z[0],
                 }
                 results.append(result)
+        else:
+            import ipdb
+            ipdb.set_trace()
     with open("project_slopes.json", "w") as json_file:
         json.dump(results, json_file, indent=4)
 
 
 if __name__ == "__main__":
-    data = reading_all_projects()
-    print(data)
-    start(data)
+    with open('./projects.json', 'r') as projects_file:
+        data = json.load(projects_file)
+        start(data)

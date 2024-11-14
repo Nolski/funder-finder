@@ -2,3 +2,10 @@ node_modules/*
 .DS_Store
 */**/__pycache__
 myenv/
+venv/
+*.json
+*.json.old
+*.txt
+exports.sh
+*.swp
+project_slopes.json
