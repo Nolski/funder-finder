@@ -84,7 +84,7 @@ class InvalidPolynomialFitError(Exception):
         super().__init__(self.message)
 
 
-def start(data):
+def start(data, calc_function):
     results = []
     for slug, project in data.items():
         print("Name:", slug)
@@ -111,42 +111,64 @@ def start(data):
                     funding_amounts.append(amount)
                 if max(funding_amounts) < 1000:
                     continue
-                # print(funding_amounts,"Final funding amount")
-                try:
-                    # Normalize x and y values
-                    x = np.arange(len(funding_amounts))
-                    y = np.array(funding_amounts)
-                    scaler = StandardScaler()
-                    x_normalized = scaler.fit_transform(x.reshape(-1, 1)).flatten()
-                    y_normalized = scaler.fit_transform(y.reshape(-1, 1)).flatten()
-
-                    z = np.polyfit(x_normalized, y_normalized, 1)
-
-                    # Check for NaN or infinite values in coefficients
-                    if np.any(np.isnan(z)) or np.any(np.isinf(z)):
-                        raise InvalidPolynomialFitError()
-                except (InvalidPolynomialFitError, np.linalg.LinAlgError) as e:
-                    print(
-                        f"Error:  Skipping project: {project['name']} for source: {key}"
-                    )
-                    print(e)
-                    continue
-
-                result = {
-                    "source": key,
-                    "project_name": slug,
-                    # Assuming project name is the same for all objects in project_data
-                    "slope": z[0],
-                }
-                results.append(result)
+                result = calc_function(funding_amounts, key, slug)
+                if result is not None:
+                    results.append(result)
         else:
-            import ipdb
-            ipdb.set_trace()
-    with open("project_slopes.json", "w") as json_file:
-        json.dump(results, json_file, indent=4)
+            continue
+    return results
 
+
+def calc_slopes(funding_amounts, key, slug):
+    # print(funding_amounts,"Final funding amount")
+    try:
+        # Normalize x and y values
+        x = np.arange(len(funding_amounts))
+        y = np.array(funding_amounts)
+        scaler = StandardScaler()
+        x_normalized = scaler.fit_transform(x.reshape(-1, 1)).flatten()
+        y_normalized = scaler.fit_transform(y.reshape(-1, 1)).flatten()
+
+        z = np.polyfit(x_normalized, y_normalized, 1)
+
+        # Check for NaN or infinite values in coefficients
+        if np.any(np.isnan(z)) or np.any(np.isinf(z)):
+            raise InvalidPolynomialFitError()
+    except (InvalidPolynomialFitError, np.linalg.LinAlgError) as e:
+        print(
+            f"Error:  Skipping project for source: {key}"
+        )
+        print(e)
+        return None
+
+    return {
+        "source": key,
+        "project_name": slug,
+        # Assuming project name is the same for all objects in project_data
+        "slope": z[0],
+    }
+
+def calc_loss(funding_amounts, key, slug):
+    loss = funding_amounts[0] - funding_amounts[-1]
+    if loss == 0:
+        return None
+
+    return {
+        "source": key,
+        "project_name": slug,
+        # Assuming project name is the same for all objects in project_data
+        "loss": loss,
+    }
 
 if __name__ == "__main__":
     with open('./projects.json', 'r') as projects_file:
         data = json.load(projects_file)
-        start(data)
+        results = start(data, calc_slopes)
+        with open("project_slopes.json", "w") as json_file:
+            json.dump(results, json_file)
+        
+        results = start(data, calc_loss)
+        with open("project_loss.json", "w") as loss_file:
+            json.dump(results, loss_file)
+        
+

@@ -51,14 +51,35 @@ def plot_graph(dates_from, values):
     plt.tight_layout()
     st.pyplot(plt)
 
-def plot_histogram():
+def plot_histogram(data):
     # Creating the histogram with bins of 0.1 increments
     plt.figure(figsize=(8, 6))
-    plt.hist(data, bins=np.arange(-1, 1.1, 0.1), edgecolor='black')
+    plt.hist(data, edgecolor='black')
     plt.xlabel('Value Range')
     plt.ylabel('Frequency')
     plt.title('Histogram of Floats Between -1 and 1 (Grouped by 0.1)')
-    plt.show()
+    st.pyplot(plt)
+
+def plot_line(data):
+    # Calculate Q1, Q3, and IQR
+    q1 = np.percentile(data, 25)
+    q3 = np.percentile(data, 75)
+    iqr = q3 - q1
+
+    # Determine bounds for outliers
+    lower_bound = q1 - 1.5 * iqr
+    upper_bound = q3 + 1.5 * iqr
+
+    # Remove outliers
+    cleaned_data = [x for x in data if lower_bound <= x <= upper_bound]
+    # Create a line plot
+    plt.hist(cleaned_data, bins=10)
+
+    # Add labels and title
+    plt.title('Line Graph of Numbers')
+    plt.xlabel('Index')
+    plt.ylabel('Value')
+    st.pyplot(plt)
 
 def getting_all_repos():
     # script to read all the repos and
@@ -148,6 +169,23 @@ def processing_data(repo_name):
 
             st.warning("No funding data found for the given repository.")
 
+def get_repo_slope_spread():
+    with open( "./project_slopes.json", "r") as f:
+        data = json.load(f)
+
+    slopes = [x["slope"] for x in data]
+
+    return plot_histogram(slopes)
+
+def get_repo_loss_spread():
+    with open( "./project_loss.json", "r") as f:
+        data = json.load(f)
+
+    loss = [x["loss"] for x in data]
+    loss.sort()
+    print(loss)
+    return plot_line(loss)
+     
 
 def get_top_10_repos():
     with open(
@@ -228,6 +266,12 @@ def main():
         "Enter Github repository name (e.g., georgetown-cset/funder-finder):"
     )
     processing_data(repo_name)
+
+    st.subheader("Histogram of slopes")
+    get_repo_slope_spread()
+
+    st.subheader("Loss")
+    get_repo_loss_spread()
 
 
 if __name__ == "__main__":
